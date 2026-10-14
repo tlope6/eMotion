@@ -11,7 +11,7 @@ SENSING, CONFIRM, RESULT = "SENSING", "CONFIRM", "RESULT"
 
 
 class StateMachine: 
-    def __init__(self, emotions, hold_seconds = 1.5, answer_seconds=0.6, result_seconds=1.5):
+    def __init__(self, emotions, hold_seconds = 1.0, answer_seconds=0.6, result_seconds=1.5):
         self.emotions = set(emotions)
         self.hold_seconds = hold_seconds
         self.answer_seconds = answer_seconds

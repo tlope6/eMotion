@@ -1,0 +1,15 @@
+time,predicted,confidence,correct,answered_with
+2026-10-14 13:35:46,Happy,0.72,True,gesture
+2026-10-14 13:46:46,Sad,0.79,True,gesture
+2026-10-14 13:53:24,Neutral,0.85,True,gesture
+2026-10-14 13:54:10,Frustrated,0.64,True,gesture
+2026-10-14 13:54:40,Worried,0.66,False,gesture
+2026-10-14 13:55:09,Happy,0.85,True,gesture
+2026-10-14 13:55:28,Sad,0.88,True,gesture
+2026-10-14 13:57:40,Neutral,0.70,True,gesture
+2026-10-14 13:58:36,Neutral,0.77,True,gesture
+2026-10-14 13:58:52,Sad,0.82,True,gesture
+2026-10-14 14:02:26,Neutral,0.69,True,gesture
+2026-10-14 14:02:42,Frustrated,0.74,True,gesture
+2026-10-14 14:09:56,Happy,0.67,True,gesture
+2026-10-14 15:41:25,Happy,0.78,True,gesture

@@ -50,7 +50,7 @@ drawing = mp.solutions.drawing_utils
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2,
                        min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 buffer = deque()              
 votes = deque(maxlen=SMOOTHING)  
 last_predict = 0.0
@@ -130,7 +130,7 @@ while cap.isOpened():
                       machine.answer, machine.answered_with)     
 
 
-
+    #Keep this its good for debugging the hand motions
     # if shown is not None:
     #     text, color = "%s (%d%%)" % (display_name(classes[shown]), round(100 * shown_conf)), (0, 255, 0)
     # else:
