@@ -1,6 +1,5 @@
 """Live gesture -> emotion recognition from the webcam. Press q to quit."""
 import time
-from collections import Counter, deque
 
 import os
 import sys
