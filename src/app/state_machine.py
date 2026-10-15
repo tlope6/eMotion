@@ -11,7 +11,7 @@ SENSING, CONFIRM, RESULT = "SENSING", "CONFIRM", "RESULT"
 
 
 class StateMachine: 
-    def __init__(self, emotions, hold_seconds = 1.0, answer_seconds=0.6, result_seconds=1.5):
+    def __init__(self, emotions, hold_seconds = 1.0, answer_seconds=0.6, result_seconds=1.5, correct_seconds=5.0):
         self.emotions = set(emotions)
         self.hold_seconds = hold_seconds
         self.answer_seconds = answer_seconds
@@ -29,6 +29,7 @@ class StateMachine:
         self.answered_with = None #"gesture" or "key"
         self.last_correct = False #answer shown on the result screen
         self._result_timer = 0.0
+        self.correct_seconds = correct_seconds
 
 
     def update(self, shown, conf, dt) :
@@ -80,10 +81,11 @@ class StateMachine:
         elif self.no >= 1.0 : 
             self._finish(False, "gesture")
 
-    def _finish(self, correct, via): 
+    def _finish(self, correct, via):
         self.answer, self.answered_with, self.last_correct = correct, via, correct
         self.state = RESULT
-        self._result_timer = self.result_seconds
+        self._result_timer = self.correct_seconds if correct else self.result_seconds
+        
 
     def _start_sensing(self):
         self.state = SENSING

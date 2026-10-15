@@ -39,6 +39,31 @@ def color_for(name):
     return EMOTION_COLORS.get(name, ACCENT)
 
 
+#confirmation screen
+MESSAGES = {
+    "Happy": "I am so glad you feel happy! Today is going to be a great day.",
+    "Sad": "It's okay to feel down. You're not alone.",
+    "Frustrated": "Take a deep breath. You've got this.",
+    "Worried": "One step at a time. It's going to be okay.",
+    "Neutral": "Calm and steady. Nice and balanced.",
+}
+
+
+def wrap(s, scale, max_w, thick=3, font=FONT_BOLD):
+    lines, cur = [], ""
+    for word in s.split():
+        trial = (cur + " " + word).strip()
+        if cur and text_w(trial, scale, thick, font) > max_w:
+            lines.append(cur)
+            cur = word
+        else:
+            cur = trial
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+
 # small building blocks for the overall overlay
 
 def put(img, s, org, scale=0.55, color=TEXT, thick=1, font=FONT):
@@ -105,12 +130,20 @@ def draw_confirm(frame, emotion, conf, yes_p, no_p, ready=True):
 
 def draw_result(frame, emotion, correct):
     h, w = frame.shape[:2]
-    dim(frame)
-    col = GOOD if correct else BAD
-    (draw_check if correct else draw_cross)(frame, w // 2, h // 2 - 50, 40, col, 10)
-    msg = "Thanks! Saved as correct" if correct else "Got it - saved as wrong"
-    put_center(frame, msg, h // 2 + 40, 0.9, TEXT, 2)
-    put_center(frame, emotion, h // 2 + 80, 0.7, MUTED, 1, FONT)
+    if correct:
+        frame[:] = tuple(int(c * 0.55) for c in color_for(emotion))  # solid fill
+        draw_check(frame, w // 2, h // 2 - 130, 30, TEXT, 8)
+        lines = wrap(MESSAGES.get(emotion, "Thanks for confirming!"), 1.3, w - 100)
+        y = h // 2 - 40
+        for line in lines:
+            put_center(frame, line, y, 1.3, TEXT, 3)
+            y += 55
+        put_center(frame, emotion.upper(), y + 20, 0.7, TEXT, 1, FONT)
+    else:
+        dim(frame)
+        draw_cross(frame, w // 2, h // 2 - 50, 40, BAD, 10)
+        put_center(frame, "Got it - saved as wrong", h // 2 + 40, 0.9, TEXT, 2)
+        put_center(frame, emotion, h // 2 + 80, 0.7, MUTED, 1, FONT)
 
 
 def draw_debug(frame, info):
