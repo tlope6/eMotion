@@ -2,7 +2,8 @@
 
 Layout:  [ camera view | side panel ]
   * side panel: title, status, live emotion bars, lock-in bar, session score, keys
-  * overlays on the camera: confirm screen, result screen, optional debug info
+  * overlays on the camera: start screen, confirm screen, result screen,
+    summary (end) screen, optional debug info
 
 Pure OpenCV + numpy, no mediapipe, so we will be able to tweak apperance with camera specifically
 live_recognize.py only needs to call draw().
@@ -146,6 +147,32 @@ def draw_result(frame, emotion, correct):
         put_center(frame, emotion, h // 2 + 80, 0.7, MUTED, 1, FONT)
 
 
+def draw_start(frame, start_p):
+    """Start screen: hold the Starting gesture (or press S) to begin."""
+    h, w = frame.shape[:2]
+    dim(frame)
+    put_center(frame, "eMotion", h // 2 - 60, 2.0, TEXT, 3)
+    put_center(frame, "Hold the Starting gesture to begin", h // 2, 0.8, MUTED, 1, FONT)
+    put_center(frame, "or press S", h // 2 + 35, 0.6, MUTED, 1, FONT)
+    bar(frame, w // 2 - 150, h // 2 + 60, 300, 12, start_p, GOOD)
+
+
+def draw_summary(frame, answered, correct, start_p):
+    """End screen: session score, then Starting gesture (or S) to play again."""
+    h, w = frame.shape[:2]
+    dim(frame, 0.75)
+    put_center(frame, "Session complete", h // 2 - 90, 1.3, TEXT, 2)
+    if answered:
+        put_center(frame, f"{correct} / {answered} correct", h // 2 - 25, 1.6,
+                   GOOD if correct * 2 >= answered else BAD, 3)
+        put_center(frame, f"{100 * correct // answered}% accuracy", h // 2 + 15, 0.7, MUTED, 1, FONT)
+    else:
+        put_center(frame, "No answers this session", h // 2 - 25, 1.0, MUTED, 2)
+    put_center(frame, "Starting gesture or S to play again   |   Q to quit",
+               h // 2 + 70, 0.6, MUTED, 1, FONT)
+    bar(frame, w // 2 - 150, h // 2 + 90, 300, 12, start_p, GOOD)
+
+
 def draw_debug(frame, info):
     """Small black box (top-left of the camera) listing whatever you pass in."""
     box_h = 14 + 20 * len(info)
@@ -200,7 +227,7 @@ def draw_panel(frame, status, status_color, emotions, scores, candidate, progres
         score = "Session: no answers yet"
     put(canvas, score, (x0, y), 0.45, MUTED)
 
-    put(canvas, "O yes   X no   D debug   Q quit", (x0, h - 16), 0.42, MUTED)
+    put(canvas, "S start  E end  O yes  X no  D debug  Q quit", (x0, h - 16), 0.42, MUTED)
     return canvas
 
 
@@ -208,14 +235,27 @@ def draw_panel(frame, status, status_color, emotions, scores, candidate, progres
 
 def draw(frame, machine, feedback, emotions, scores, hands_now, debug=None):
     """Draws everything for the current step and returns the full window image."""
-    if machine.state == "CONFIRM":
+    if machine.state == "IDLE":
+        draw_start(frame, machine.start_p)
+    elif machine.state == "SUMMARY":
+        draw_summary(frame, feedback.answered, feedback.correct, machine.start_p)
+    elif machine.state == "CONFIRM":
         draw_confirm(frame, machine.locked, machine.locked_conf, machine.yes, machine.no)
     elif machine.state == "RESULT":
         draw_result(frame, machine.locked, machine.last_correct)
     if debug:
         draw_debug(frame, debug)
 
-    if machine.state == "SENSING":
+    if machine.state == "IDLE":
+        status, col = "Waiting to start", MUTED
+        candidate, progress = None, 0.0
+    elif machine.state == "SUMMARY":
+        status, col = "Session over", ACCENT
+        candidate, progress = None, 0.0
+    elif machine.state == "SENSING" and machine.end_p > 0:
+        status, col = f"Ending... {machine.end_p * 100:.0f}%", BAD
+        candidate, progress = machine.candidate, machine.progress
+    elif machine.state == "SENSING":
         if not hands_now:
             status, col = "Show your hands", MUTED
         elif machine.candidate:

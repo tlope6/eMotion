@@ -1,4 +1,7 @@
-"""Live gesture -> emotion recognition from the webcam. Press q to quit."""
+"""Live gesture -> emotion recognition from the webcam.
+
+Keys: s = start   e = end   o = correct   x = wrong   d = debug   q = quit
+"""
 import time
 
 import os
@@ -49,7 +52,8 @@ drawing = mp.solutions.drawing_utils
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2,
                        min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-cap = cv2.VideoCapture(0)
+CAMERA = 0   # if the camera window is black, try 1 (Macs can list an iPhone camera first)
+cap = cv2.VideoCapture(CAMERA)
 buffer = deque()              
 votes = deque(maxlen=SMOOTHING)  
 last_predict = 0.0
@@ -119,12 +123,19 @@ while cap.isOpened():
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         break
-    if key == ord("d"):                                          
-        show_debug = not show_debug                           
-        machine.answer_key(True)                               
-    if key == ord("x"):                                           
-        machine.answer_key(False)                                
-    if machine.answer is not None:                                # saves the OK / X answer
+    if key == ord("d"):                    # toggle the debug box
+        show_debug = not show_debug
+    if key == ord("o"):                    # O = the guess was correct
+        machine.answer_key(True)
+    if key == ord("x"):                    # X = the guess was wrong
+        machine.answer_key(False)
+    if key == ord("s"):                    # S = start a session
+        machine.start_key()
+    if key == ord("e"):                    # E = end the session
+        machine.end_key()
+    if machine.just_started:               # fresh score for each new session
+        feedback.reset()
+    if machine.answer is not None:         # saves the OK / X answer
         feedback.save(machine.locked, machine.locked_conf,
                       machine.answer, machine.answered_with)     
 
