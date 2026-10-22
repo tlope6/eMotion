@@ -10,16 +10,26 @@ import numpy as np
 # A name like "Happy_thumb" is displayed as "Happy" (text before the first underscore),
 # so an emotion with two very different motions can be split into two classes later.
 CLASSES = [
-    "Starting",
-    "Neutral",
-    "Happy",
-    "Sad",
-    "Frustrated",
-    "Worried",
-    "Ending",
-    "Confirm",
-    "Deny",
-    "None",  # idle hands / random movement, so the model can say "no gesture"
+    "Starting", #hand wave
+    "Neutral", #so-so motion
+    "Neutral_shrug",
+    "Neutral_67", 
+    "Happy", #thumbs up 
+    "Happy_fists",
+    "Sad", #thumbs down
+    "Sad_weepy",
+    "Frustrated", #vibrating fists
+    "Frustrated_claws",
+    "Worried", #shaking hands
+    "Worried_face",
+    "Ending", #hand wave away 
+    "Confirm", #okay hand
+    #"Confirm_thumb", 
+    #"Confirm_left",
+    "Deny", #X motion
+    #"Deny_thumb",
+    #"Deny_right",
+    "None"  # idle hands / random movement, so the model can say "no gesture"
 ]
 
 CLIP_SECONDS = 1.5   # length of one gesture window

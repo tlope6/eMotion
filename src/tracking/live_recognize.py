@@ -23,7 +23,7 @@ from app.state_machine import StateMachine
 
 
 
-CONFIDENCE = 0.6      
+CONFIDENCE = 0.4      
 PREDICT_EVERY = 0.1  
 SMOOTHING = 5      
 
@@ -129,7 +129,7 @@ while cap.isOpened():
                       machine.answer, machine.answered_with)     
 
 
-    #Keep this its good for debugging the hand motions
+    # Keep this its good for debugging the hand motions
     # if shown is not None:
     #     text, color = "%s (%d%%)" % (display_name(classes[shown]), round(100 * shown_conf)), (0, 255, 0)
     # else:
