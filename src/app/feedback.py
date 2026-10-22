@@ -28,7 +28,7 @@ class Feedback:
                 writer.writerow(["time", "predicted", "confidence", "correct", "answered_with"])
 
             writer.writerow([time.strftime("%Y-%m-%d %H:%M:%S"), emotion, f"{confidence:.2f}", correct, answered_with])
-        self.answcered += 1
+        self.answered += 1
         self.correct += int(correct)
         print(f"[answer] {emotion} -> {'correct' if correct else 'wrong'} "
                 f"(via {answered_with}) session: {self.correct}/{self.answered}")
